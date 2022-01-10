@@ -19,7 +19,7 @@ class ApiRequest {
         return url + endpoint.rawValue
     }
     
-    func getListOfQuotes(completionHandler: @escaping (Result<ListQuotes, ApiRequestError>) -> Void) {
+    func getListQuotes(completionHandler: @escaping (Result<ListQuotes, ApiRequestError>) -> Void) {
         let urlString = getUrl(.list)
         guard let url = URL(string: urlString) else { return completionHandler(.failure(ApiRequestError.invalidUrl)) }
         let task = URLSession.shared.dataTask(with: url) { data, _, error in

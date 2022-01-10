@@ -8,47 +8,47 @@
 import Foundation
 
 protocol ListViewModelType {
-    var output: ListViewModelOutput? {get set}
-    func getQuotationValue(from: String, to: String, quantity: Float, completion: @escaping (Result<Float, ApiRequestError>) -> Void)
-    func getAvaliableQuotes(completion: @escaping (Result<[(code: String, description: String)], ApiRequestError>) -> Void)
+    var output: ListViewModelOutput? { get set }
+    var listQuotes: [(code: String, description: String)]? { get set }
+    func fetchQuotes()
 }
 
 protocol ListViewModelOutput: AnyObject {
-//    func didFetchCoins(result: Result<String, FetchError>)
+    func reloadDisplayData()
 }
 
 final class ListViewModel {
     private let repository = ApiRequest()
+    
     public weak var output: ListViewModelOutput?
+    var listQuotes: [(code: String, description: String)]? = []
 }
 
 
 extension ListViewModel: ListViewModelType {
     
-    func getQuotationValue(from: String, to: String, quantity: Float, completion: @escaping (Result<Float, ApiRequestError>) -> Void) {
-        repository.getCurrentQuotes { response in
-            switch response {
-            case .success(let currentQuotes):
-                if from == currentQuotes.source, let quote = currentQuotes.quotes[from + to] {
-                    return completion(.success(quantity * quote))
-                } else if let fromQuote = currentQuotes.quotes[currentQuotes.source + from], let toQuote = currentQuotes.quotes[currentQuotes.source + to] {
-                    return completion(.success(quantity * ( toQuote / fromQuote )))
-                } else {
-                    completion(.failure(.quoteNotFound))
+    func fetchQuotes() {
+        self.getListQuotes { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let listQuotes):
+                self.listQuotes = listQuotes.sorted(by: { $0.code < $1.code })
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
+                    self.output?.reloadDisplayData()
                 }
                 
-            case .failure(let error):
-                completion(.failure(error))
+            case .failure: break
             }
         }
     }
     
-    func getAvaliableQuotes(completion: @escaping (Result<[(code: String, description: String)], ApiRequestError>) -> Void) {
-        repository.getListOfQuotes { response in
+    func getListQuotes(completion: @escaping (Result<[(code: String, description: String)], ApiRequestError>) -> Void) {
+        repository.getListQuotes { response in
             switch response {
-            case .success(let avaliableCurrencies):
+            case .success(let listQuotes):
                 var codesAndDescriptions: [(code: String, description: String)] = []
-                for currency in avaliableCurrencies.currencies {
+                for currency in listQuotes.currencies {
                     codesAndDescriptions.append((code: currency.key, description: currency.value))
                 }
                 completion(.success(codesAndDescriptions))
