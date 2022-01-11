@@ -20,6 +20,7 @@
 		2E1B3236278C7FA800F6BE24 /* ApiRequestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E1B3235278C7FA800F6BE24 /* ApiRequestError.swift */; };
 		2E1B323F278CA6DC00F6BE24 /* ConverterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E1B323E278CA6DC00F6BE24 /* ConverterViewModel.swift */; };
 		2E1B3241278CA6E800F6BE24 /* ConverterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E1B3240278CA6E800F6BE24 /* ConverterModel.swift */; };
+		2E1B3244278DC0AC00F6BE24 /* CoinListModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E1B3243278DC0AC00F6BE24 /* CoinListModal.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +39,7 @@
 		2E1B3235278C7FA800F6BE24 /* ApiRequestError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiRequestError.swift; sourceTree = "<group>"; };
 		2E1B323E278CA6DC00F6BE24 /* ConverterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConverterViewModel.swift; sourceTree = "<group>"; };
 		2E1B3240278CA6E800F6BE24 /* ConverterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConverterModel.swift; sourceTree = "<group>"; };
+		2E1B3243278DC0AC00F6BE24 /* CoinListModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinListModal.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +88,7 @@
 		2E1B3226278C5B5700F6BE24 /* ConverterModule */ = {
 			isa = PBXGroup;
 			children = (
+				2E1B3242278DC05300F6BE24 /* CoinListModal */,
 				2E1B3227278C5BA100F6BE24 /* ConverterViewController.swift */,
 				2E1B323E278CA6DC00F6BE24 /* ConverterViewModel.swift */,
 				2E1B3240278CA6E800F6BE24 /* ConverterModel.swift */,
@@ -110,6 +113,14 @@
 				2E1B3235278C7FA800F6BE24 /* ApiRequestError.swift */,
 			);
 			path = Request;
+			sourceTree = "<group>";
+		};
+		2E1B3242278DC05300F6BE24 /* CoinListModal */ = {
+			isa = PBXGroup;
+			children = (
+				2E1B3243278DC0AC00F6BE24 /* CoinListModal.swift */,
+			);
+			path = CoinListModal;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -186,6 +197,7 @@
 				2E1B323F278CA6DC00F6BE24 /* ConverterViewModel.swift in Sources */,
 				2E1B3241278CA6E800F6BE24 /* ConverterModel.swift in Sources */,
 				2E1B3213278C599200F6BE24 /* AppDelegate.swift in Sources */,
+				2E1B3244278DC0AC00F6BE24 /* CoinListModal.swift in Sources */,
 				2E1B3230278C65A700F6BE24 /* ListViewModel.swift in Sources */,
 				2E1B3215278C599200F6BE24 /* SceneDelegate.swift in Sources */,
 				2E1B322D278C633E00F6BE24 /* ListModel.swift in Sources */,

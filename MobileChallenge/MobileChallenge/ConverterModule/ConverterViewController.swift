@@ -27,6 +27,7 @@ class ConverterViewController: UIViewController {
         button.contentVerticalAlignment = .center
         button.backgroundColor = .systemBlue
         button.layer.cornerRadius = 5
+        button.addTarget(self, action: #selector(triggerFromListModal), for: .touchUpInside)
         return button
     }()
     
@@ -46,6 +47,7 @@ class ConverterViewController: UIViewController {
         let label = UILabel()
         label.text = "From"
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont.systemFont(ofSize: 14.0)
         label.numberOfLines = 0
         return label
     }()
@@ -54,11 +56,12 @@ class ConverterViewController: UIViewController {
         let label = UILabel()
         label.text = "To"
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont.systemFont(ofSize: 14.0)
         label.numberOfLines = 0
         return label
     }()
     
-    lazy var fromTextField: UITextField = {
+    lazy var amountTextField: UITextField = {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.layer.cornerRadius = 5
@@ -82,6 +85,27 @@ class ConverterViewController: UIViewController {
         return button
     }()
     
+    lazy var resultTextField: UITextField = {
+        let textField = UITextField()
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.layer.cornerRadius = 5
+        textField.backgroundColor = .systemGray6
+        textField.isUserInteractionEnabled = false
+        let paddingView = UIView(frame: CGRect(x: 0 ,y: 0 ,width: 15 ,height: textField.frame.height))
+        textField.leftView = paddingView
+        textField.leftViewMode = UITextField.ViewMode.always
+        return textField
+    }()
+    
+    lazy var resultLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Result"
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont.systemFont(ofSize: 14.0)
+        label.numberOfLines = 0
+        return label
+    }()
+    
     override func viewDidLoad() {
         view.backgroundColor = .systemBackground
         self.title = "Converter"
@@ -92,10 +116,24 @@ class ConverterViewController: UIViewController {
         self.view.addSubview(toButton)
         self.view.addSubview(fromLabel)
         self.view.addSubview(toLabel)
-        self.view.addSubview(fromTextField)
+        self.view.addSubview(amountTextField)
         self.view.addSubview(convertButton)
+        self.view.addSubview(resultTextField)
+        self.view.addSubview(resultLabel)
         
         configureConstraints()
+    }
+    
+    @objc func triggerFromListModal() {
+        let fromListModal = CoinListModal()
+        fromListModal.viewModel = ConverterViewModel()
+        fromListModal.viewModel.output = fromListModal
+        present(fromListModal, animated: true, completion: nil)
+//        let fromListModal = CoinListModal(with: viewModel)
+//        fromListModal.fromOrTo = "from"
+//        let navFromListModal = UINavigationController()
+//        navFromListModal.viewControllers = [fromListModal]
+//        present(navFromListModal, animated: true, completion: nil)
     }
     
     func configureConstraints() {
@@ -122,20 +160,29 @@ class ConverterViewController: UIViewController {
             toLabel.centerXAnchor.constraint(equalTo: toButton.centerXAnchor),
             toLabel.bottomAnchor.constraint(equalTo: toButton.topAnchor, constant: -5),
             
-            fromTextField.leadingAnchor.constraint(equalTo: fromButton.leadingAnchor),
-            fromTextField.trailingAnchor.constraint(equalTo: toButton.trailingAnchor),
-            fromTextField.heightAnchor.constraint(equalToConstant: 50),
-            fromTextField.topAnchor.constraint(equalTo: arrowImage.bottomAnchor, constant: 25),
+            amountTextField.leadingAnchor.constraint(equalTo: fromButton.leadingAnchor),
+            amountTextField.trailingAnchor.constraint(equalTo: toButton.trailingAnchor),
+            amountTextField.heightAnchor.constraint(equalToConstant: 50),
+            amountTextField.topAnchor.constraint(equalTo: arrowImage.bottomAnchor, constant: 25),
             
-            convertButton.leadingAnchor.constraint(equalTo: fromTextField.leadingAnchor),
-            convertButton.trailingAnchor.constraint(equalTo: fromTextField.trailingAnchor),
+            convertButton.leadingAnchor.constraint(equalTo: amountTextField.leadingAnchor),
+            convertButton.trailingAnchor.constraint(equalTo: amountTextField.trailingAnchor),
             convertButton.heightAnchor.constraint(equalToConstant: 50),
-            convertButton.topAnchor.constraint(equalTo: fromTextField.bottomAnchor, constant: 25)
+            convertButton.topAnchor.constraint(equalTo: amountTextField.bottomAnchor, constant: 25),
             
+            resultTextField.leadingAnchor.constraint(equalTo: convertButton.leadingAnchor),
+            resultTextField.trailingAnchor.constraint(equalTo: convertButton.trailingAnchor),
+            resultTextField.heightAnchor.constraint(equalToConstant: 60),
+            resultTextField.topAnchor.constraint(equalTo: convertButton.bottomAnchor, constant: 35),
+            
+            resultLabel.leadingAnchor.constraint(equalTo: resultTextField.leadingAnchor),
+            resultLabel.bottomAnchor.constraint(equalTo: resultTextField.topAnchor, constant: -3)
         ])
     }
 }
 
 extension ConverterViewController: ConverterViewModelOutput {
-    
+    func reloadDisplayData() {
+        //
+    }
 }

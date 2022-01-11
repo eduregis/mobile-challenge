@@ -11,11 +11,17 @@ protocol ConverterViewModelType {
     var output: ConverterViewModelOutput? { get set }
     var liveQuotes: [(code: String, rate: Float)]? { get set }
     
-    func fetchQuotes()
+    var fromQuoteIndex: Int? { get set }
+    var toQuoteIndex: Int? { get set }
+    
+    func fetchQuotes(searchText: String)
+    func numberOfRows() -> Int
+    func cellText(index: Int) -> String
+    func selectedRow(index: Int, fromOrTo: String)
 }
 
 protocol ConverterViewModelOutput: AnyObject {
-    
+    func reloadDisplayData()
 }
 
 final class ConverterViewModel {
@@ -23,29 +29,51 @@ final class ConverterViewModel {
     
     public weak var output: ConverterViewModelOutput?
     var liveQuotes: [(code: String, rate: Float)]? = []
+    
+    var fromQuoteIndex: Int? = -1
+    var toQuoteIndex: Int? = -1
 }
 
 extension ConverterViewModel: ConverterViewModelType {
-    
-    func fetchQuotes() {
+    func fetchQuotes(searchText: String) {
         self.getLiveQuotes { [weak self] result in
             guard let self = self else { return }
             switch result {
             case .success(let liveQuotes):
                 self.liveQuotes = liveQuotes.sorted(by: { $0.code < $1.code })
+                if searchText != "" {
+                    self.liveQuotes = self.liveQuotes?.filter { quote in
+                        return quote.code.contains(searchText)
+                    }
+                }
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
-                    print(self.liveQuotes)
+                    self.output?.reloadDisplayData()
                 }
             case .failure: break
             }
         }
     }
     
+    func numberOfRows() -> Int {
+        print(self.liveQuotes?.count)
+        return self.liveQuotes?.count ?? 0
+    }
+    
+    func cellText(index: Int) -> String {
+        let code = self.liveQuotes![index].code
+        return "\(code.suffix(3))"
+    }
+    
+    func selectedRow(index: Int, fromOrTo: String) {
+        print(index, " , " ,fromOrTo)
+    }
+    
     func getLiveQuotes(completion: @escaping (Result<[(code: String, rate: Float)], ApiRequestError>) -> Void) {
         repository.getLiveQuotes { response in
             switch response {
             case .success(let liveQuotes):
+                
                 var codesAndRates: [(code: String, rate: Float)] = []
                 for quote in liveQuotes.quotes {
                     codesAndRates.append((code: quote.key, rate: quote.value))
