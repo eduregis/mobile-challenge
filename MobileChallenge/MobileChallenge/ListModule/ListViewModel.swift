@@ -37,7 +37,7 @@ extension ListViewModel: ListViewModelType {
                 self.listQuotes = listQuotes.sorted(by: { $0.code < $1.code })
                 if searchText != "" {
                     self.listQuotes = self.listQuotes?.filter { quote in
-                        return (quote.code.contains(searchText) || quote.description.contains(searchText))
+                        return (quote.code.uppercased().contains(searchText.uppercased()) || quote.description.uppercased().contains(searchText.uppercased()))
                     }
                 }
                 DispatchQueue.main.async { [weak self] in

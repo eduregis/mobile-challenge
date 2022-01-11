@@ -11,7 +11,19 @@ import UIKit
 class ConverterViewController: UIViewController {
     
     var viewModel: ConverterViewModelType!
-
+    
+    var fromQuote: (code: String, rate: Float)? {
+        didSet {
+            fromButton.setTitle("\(fromQuote?.code.suffix(3) ?? "")", for: .normal)
+        }
+    }
+    
+    var toQuote: (code: String, rate: Float)? {
+        didSet {
+            toButton.setTitle("\(toQuote?.code.suffix(3) ?? "")", for: .normal)
+        }
+    }
+    
     lazy var arrowImage: UIImageView = {
         let imageView = UIImageView(image: UIImage(systemName: "arrow.right"))
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -40,6 +52,7 @@ class ConverterViewController: UIViewController {
         button.contentVerticalAlignment = .center
         button.backgroundColor = .systemBlue
         button.layer.cornerRadius = 5
+        button.addTarget(self, action: #selector(triggerToListModal), for: .touchUpInside)
         return button
     }()
     
@@ -82,6 +95,7 @@ class ConverterViewController: UIViewController {
         button.contentVerticalAlignment = .center
         button.backgroundColor = .systemBlue
         button.layer.cornerRadius = 5
+        button.addTarget(self, action: #selector(triggerConvert), for: .touchUpInside)
         return button
     }()
     
@@ -109,7 +123,7 @@ class ConverterViewController: UIViewController {
     override func viewDidLoad() {
         view.backgroundColor = .systemBackground
         self.title = "Converter"
-//        self.viewModel.fetchQuotes()
+        
         
         self.view.addSubview(arrowImage)
         self.view.addSubview(fromButton)
@@ -125,15 +139,23 @@ class ConverterViewController: UIViewController {
     }
     
     @objc func triggerFromListModal() {
-        let fromListModal = CoinListModal()
-        fromListModal.viewModel = ConverterViewModel()
-        fromListModal.viewModel.output = fromListModal
-        present(fromListModal, animated: true, completion: nil)
-//        let fromListModal = CoinListModal(with: viewModel)
-//        fromListModal.fromOrTo = "from"
-//        let navFromListModal = UINavigationController()
-//        navFromListModal.viewControllers = [fromListModal]
-//        present(navFromListModal, animated: true, completion: nil)
+        let fromListModal = CoinListModal(with: viewModel)
+        fromListModal.fromOrTo = "from"
+        let navFromListModal = UINavigationController()
+        navFromListModal.viewControllers = [fromListModal]
+        present(navFromListModal, animated: true, completion: nil)
+    }
+    
+    @objc func triggerToListModal() {
+        let fromListModal = CoinListModal(with: viewModel)
+        fromListModal.fromOrTo = "to"
+        let navFromListModal = UINavigationController()
+        navFromListModal.viewControllers = [fromListModal]
+        present(navFromListModal, animated: true, completion: nil)
+    }
+    
+    @objc func triggerConvert() {
+        print("vapo")
     }
     
     func configureConstraints() {
@@ -183,6 +205,16 @@ class ConverterViewController: UIViewController {
 
 extension ConverterViewController: ConverterViewModelOutput {
     func reloadDisplayData() {
-        //
+        self.viewModel.fetchQuotes(searchText: "") {
+            guard let fromQuoteIndex = self.viewModel.fromQuoteIndex else { return }
+            guard let toQuoteIndex = self.viewModel.toQuoteIndex else { return }
+            guard let liveQuotes = self.viewModel.liveQuotes else { return }
+            if fromQuoteIndex >= 0 {
+                fromQuote = liveQuotes[fromQuoteIndex]
+            }
+            if toQuoteIndex >= 0 {
+                toQuote = liveQuotes[toQuoteIndex]
+            }
+        }
     }
 }

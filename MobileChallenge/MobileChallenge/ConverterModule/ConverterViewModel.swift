@@ -14,10 +14,10 @@ protocol ConverterViewModelType {
     var fromQuoteIndex: Int? { get set }
     var toQuoteIndex: Int? { get set }
     
-    func fetchQuotes(searchText: String)
+    func fetchQuotes(searchText: String, completion: () -> ())
     func numberOfRows() -> Int
     func cellText(index: Int) -> String
-    func selectedRow(index: Int, fromOrTo: String)
+    func selectedRow(index: Int, fromOrTo: String, completion: () -> ())
 }
 
 protocol ConverterViewModelOutput: AnyObject {
@@ -35,7 +35,7 @@ final class ConverterViewModel {
 }
 
 extension ConverterViewModel: ConverterViewModelType {
-    func fetchQuotes(searchText: String) {
+    func fetchQuotes(searchText: String, completion: () -> ()) {
         self.getLiveQuotes { [weak self] result in
             guard let self = self else { return }
             switch result {
@@ -43,20 +43,16 @@ extension ConverterViewModel: ConverterViewModelType {
                 self.liveQuotes = liveQuotes.sorted(by: { $0.code < $1.code })
                 if searchText != "" {
                     self.liveQuotes = self.liveQuotes?.filter { quote in
-                        return quote.code.contains(searchText)
+                        return quote.code.contains(searchText.uppercased())
                     }
-                }
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    self.output?.reloadDisplayData()
                 }
             case .failure: break
             }
         }
+        completion()
     }
     
     func numberOfRows() -> Int {
-        print(self.liveQuotes?.count)
         return self.liveQuotes?.count ?? 0
     }
     
@@ -65,8 +61,14 @@ extension ConverterViewModel: ConverterViewModelType {
         return "\(code.suffix(3))"
     }
     
-    func selectedRow(index: Int, fromOrTo: String) {
-        print(index, " , " ,fromOrTo)
+    func selectedRow(index: Int, fromOrTo: String, completion: () -> ()) {
+        if fromOrTo == "from" {
+            fromQuoteIndex = index
+        } else if fromOrTo == "to" {
+            toQuoteIndex = index
+        }
+        completion()
+        self.output?.reloadDisplayData()
     }
     
     func getLiveQuotes(completion: @escaping (Result<[(code: String, rate: Float)], ApiRequestError>) -> Void) {

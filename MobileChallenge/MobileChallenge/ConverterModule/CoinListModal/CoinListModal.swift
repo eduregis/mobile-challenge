@@ -13,22 +13,28 @@ class CoinListModal: UIViewController {
     var tableView = UITableView()
     let searchController = UISearchController()
     
-//    var fromOrTo: String!
+    var fromOrTo: String!
     var actualSearchText: String = ""
     
     var viewModel: ConverterViewModelType!
 
-//    init(with viewModel: ConverterViewModelType) {
-//        super.init(nibName: nil, bundle: nil)
-//        self.viewModel = viewModel
-//    }
-//
-//    required init?(coder: NSCoder) {
-//        fatalError("init(coder:) has not been implemented")
-//    }
+    init(with viewModel: ConverterViewModelType) {
+        super.init(nibName: nil, bundle: nil)
+        self.viewModel = viewModel
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        viewModel.fetchQuotes(searchText: "") { () -> () in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.tableView.reloadData()
+            }
+        }
         
         tableView.delegate = self
         tableView.dataSource = self
@@ -43,8 +49,6 @@ class CoinListModal: UIViewController {
         self.title = "Choose a coin..."
 
         configureConstraints()
-    
-        viewModel.fetchQuotes(searchText: "")
     }
     
     func configureConstraints() {
@@ -68,14 +72,22 @@ extension CoinListModal: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath as IndexPath)
         cell.textLabel?.text = self.viewModel.cellText(index: indexPath.row)
+        if ((fromOrTo == "from") && (indexPath.row == viewModel.fromQuoteIndex)) || ((fromOrTo == "to") && (indexPath.row == viewModel.toQuoteIndex)) {
+            cell.accessoryType = .checkmark
+        } else {
+            cell.accessoryType = .none
+        }
+        
         return cell
     }
     
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        dismiss(animated: true, completion: { [self] in
-//            self.viewModel.selectedRow(index: indexPath.row, fromOrTo: fromOrTo)
-//        })
-//    }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        dismiss(animated: true, completion: { [self] in
+            self.viewModel.selectedRow(index: indexPath.row, fromOrTo: fromOrTo) { () -> () in
+                dismiss(animated: true, completion: nil)
+            }
+        })
+    }
 }
 
 extension CoinListModal: UISearchResultsUpdating {
@@ -84,14 +96,12 @@ extension CoinListModal: UISearchResultsUpdating {
         self.actualSearchText = searchText
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
             if self.actualSearchText == searchText {
-                self.viewModel.fetchQuotes(searchText: searchText)
+                self.viewModel.fetchQuotes(searchText: searchText) { () -> () in
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        self.tableView.reloadData()
+                    }
+                }
             }
         }
-    }
-}
-
-extension CoinListModal: ConverterViewModelOutput {
-    func reloadDisplayData() {
-        tableView.reloadData()
     }
 }
