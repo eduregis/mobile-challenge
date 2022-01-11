@@ -47,6 +47,8 @@ class CoinListModal: UIViewController {
         self.view.addSubview(tableView)
         self.tableView.tableFooterView = UIView()
         self.title = "Choose a coin..."
+        
+        self.hideKeyboardWhenTappedAround() 
 
         configureConstraints()
     }
@@ -77,7 +79,6 @@ extension CoinListModal: UITableViewDelegate, UITableViewDataSource {
         } else {
             cell.accessoryType = .none
         }
-        
         return cell
     }
     

@@ -12,15 +12,17 @@ class ConverterViewController: UIViewController {
     
     var viewModel: ConverterViewModelType!
     
-    var fromQuote: (code: String, rate: Float)? {
+    var fromQuote: (code: String, rate: CGFloat)? {
         didSet {
             fromButton.setTitle("\(fromQuote?.code.suffix(3) ?? "")", for: .normal)
+            enableConvert()
         }
     }
     
-    var toQuote: (code: String, rate: Float)? {
+    var toQuote: (code: String, rate: CGFloat)? {
         didSet {
             toButton.setTitle("\(toQuote?.code.suffix(3) ?? "")", for: .normal)
+            enableConvert()
         }
     }
     
@@ -83,6 +85,7 @@ class ConverterViewController: UIViewController {
         let paddingView = UIView(frame: CGRect(x: 0 ,y: 0 ,width: 15 ,height: textField.frame.height))
         textField.leftView = paddingView
         textField.leftViewMode = UITextField.ViewMode.always
+        textField.delegate = self
         return textField
     }()
     
@@ -93,9 +96,10 @@ class ConverterViewController: UIViewController {
         button.tintColor = .white
         button.contentHorizontalAlignment = .center
         button.contentVerticalAlignment = .center
-        button.backgroundColor = .systemBlue
+        button.backgroundColor = .systemGray4
         button.layer.cornerRadius = 5
         button.addTarget(self, action: #selector(triggerConvert), for: .touchUpInside)
+        button.isEnabled = false
         return button
     }()
     
@@ -135,6 +139,8 @@ class ConverterViewController: UIViewController {
         self.view.addSubview(resultTextField)
         self.view.addSubview(resultLabel)
         
+        self.hideKeyboardWhenTappedAround() 
+        
         configureConstraints()
     }
     
@@ -155,7 +161,25 @@ class ConverterViewController: UIViewController {
     }
     
     @objc func triggerConvert() {
-        print("vapo")
+        if amountTextField.hasText {
+            guard let amountText = amountTextField.text else { return }
+            guard let fromQuote = fromQuote else { return }
+            guard let toQuote = toQuote else { return }
+            
+            if let number = NumberFormatter().number(from: amountText) {
+                let amount = CGFloat(truncating: number)
+                let result = viewModel.convert(amount: amount, from: fromQuote, to: toQuote)
+                
+                resultTextField.text = "\(result)"
+            }
+        }
+    }
+    
+    func enableConvert() {
+        if fromQuote != nil && toQuote != nil {
+            convertButton.isEnabled = true
+            convertButton.backgroundColor = .systemBlue
+        }
     }
     
     func configureConstraints() {
@@ -216,5 +240,18 @@ extension ConverterViewController: ConverterViewModelOutput {
                 toQuote = liveQuotes[toQuoteIndex]
             }
         }
+    }
+}
+
+extension ConverterViewController: UITextFieldDelegate {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let aSet = NSCharacterSet(charactersIn:"0123456789.").inverted
+        let compSepByCharInSet = string.components(separatedBy: aSet)
+        let numberFiltered = compSepByCharInSet.joined(separator: "")
+        return string == numberFiltered
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        return true
     }
 }

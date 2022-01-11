@@ -21,6 +21,7 @@
 		2E1B323F278CA6DC00F6BE24 /* ConverterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E1B323E278CA6DC00F6BE24 /* ConverterViewModel.swift */; };
 		2E1B3241278CA6E800F6BE24 /* ConverterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E1B3240278CA6E800F6BE24 /* ConverterModel.swift */; };
 		2E1B3244278DC0AC00F6BE24 /* CoinListModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E1B3243278DC0AC00F6BE24 /* CoinListModal.swift */; };
+		2E1B3247278E0DD400F6BE24 /* DismissKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E1B3246278E0DD400F6BE24 /* DismissKeyboard.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +41,7 @@
 		2E1B323E278CA6DC00F6BE24 /* ConverterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConverterViewModel.swift; sourceTree = "<group>"; };
 		2E1B3240278CA6E800F6BE24 /* ConverterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConverterModel.swift; sourceTree = "<group>"; };
 		2E1B3243278DC0AC00F6BE24 /* CoinListModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinListModal.swift; sourceTree = "<group>"; };
+		2E1B3246278E0DD400F6BE24 /* DismissKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DismissKeyboard.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +74,7 @@
 		2E1B3211278C599200F6BE24 /* MobileChallenge */ = {
 			isa = PBXGroup;
 			children = (
+				2E1B3245278E0DBE00F6BE24 /* Extensions */,
 				2E1B3232278C7E6700F6BE24 /* Request */,
 				2E1B3229278C5BAE00F6BE24 /* ListModule */,
 				2E1B3226278C5B5700F6BE24 /* ConverterModule */,
@@ -121,6 +124,14 @@
 				2E1B3243278DC0AC00F6BE24 /* CoinListModal.swift */,
 			);
 			path = CoinListModal;
+			sourceTree = "<group>";
+		};
+		2E1B3245278E0DBE00F6BE24 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				2E1B3246278E0DD400F6BE24 /* DismissKeyboard.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -203,6 +214,7 @@
 				2E1B322D278C633E00F6BE24 /* ListModel.swift in Sources */,
 				2E1B322B278C5BD200F6BE24 /* ListViewController.swift in Sources */,
 				2E1B3236278C7FA800F6BE24 /* ApiRequestError.swift in Sources */,
+				2E1B3247278E0DD400F6BE24 /* DismissKeyboard.swift in Sources */,
 				2E1B3234278C7E8500F6BE24 /* ApiRequest.swift in Sources */,
 				2E1B3228278C5BA100F6BE24 /* ConverterViewController.swift in Sources */,
 			);

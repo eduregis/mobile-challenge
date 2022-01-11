@@ -30,6 +30,8 @@ class ListViewController: UIViewController {
         self.view.addSubview(tableView)
         self.tableView.tableFooterView = UIView()
         self.title = "List"
+        
+        self.hideKeyboardWhenTappedAround() 
 
         configureConstraints()
     

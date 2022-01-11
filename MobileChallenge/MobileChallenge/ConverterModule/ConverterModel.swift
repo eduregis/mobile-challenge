@@ -6,9 +6,10 @@
 //
 
 import Foundation
+import UIKit
 
 class LiveQuotes: Decodable {
     let success: Bool
     let source: String
-    let quotes: [String: Float]
+    let quotes: [String: CGFloat]
 }
