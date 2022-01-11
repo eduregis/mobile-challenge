@@ -23,6 +23,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         navListView.title = "List"
         
         let converterView = ConverterViewController()
+        converterView.viewModel = ConverterViewModel()
+        converterView.viewModel.output = converterView
         let navConverterView = UINavigationController()
         navConverterView.viewControllers = [converterView]
         navConverterView.title = "Converter"

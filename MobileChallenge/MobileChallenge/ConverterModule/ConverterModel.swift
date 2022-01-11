@@ -7,7 +7,7 @@
 
 import Foundation
 
-class CurrentQuotes: Decodable {
+class LiveQuotes: Decodable {
     let success: Bool
     let source: String
     let quotes: [String: Float]

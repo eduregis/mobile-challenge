@@ -14,6 +14,8 @@ class ListViewController: UIViewController {
     var tableView = UITableView()
     let searchController = UISearchController()
     
+    var actualSearchText: String = ""
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -31,7 +33,7 @@ class ListViewController: UIViewController {
 
         configureConstraints()
     
-        viewModel.fetchQuotes()
+        viewModel.fetchQuotes(searchText: "")
     }
     
     func configureConstraints() {
@@ -52,22 +54,29 @@ extension ListViewController: ListViewModelOutput {
     }
 }
 
-
 extension ListViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.viewModel.listQuotes!.count
+        return self.viewModel.numberOfRows()
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath as IndexPath)
-        cell.textLabel?.text = "\(self.viewModel.listQuotes![indexPath.row].code) - \(self.viewModel.listQuotes![indexPath.row].description)"
+        cell.textLabel?.text = self.viewModel.cellText(index: indexPath.row)
         return cell
     }
 }
 
 extension ListViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
-        print(searchController.searchBar.text)
+        guard let searchText = searchController.searchBar.text else { return }
+        self.actualSearchText = searchText
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+            if self.actualSearchText == searchText {
+                self.viewModel.fetchQuotes(searchText: searchText)
+            }
+        }
     }
+    
+    
 }

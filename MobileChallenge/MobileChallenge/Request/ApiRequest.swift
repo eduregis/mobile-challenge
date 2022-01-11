@@ -34,13 +34,13 @@ class ApiRequest {
         task.resume()
     }
     
-    func getCurrentQuotes(completionHandler: @escaping (Result<CurrentQuotes, ApiRequestError>) -> Void) {
+    func getLiveQuotes(completionHandler: @escaping (Result<LiveQuotes, ApiRequestError>) -> Void) {
         let urlString = getUrl(.live)
         guard let url = URL(string: urlString) else { return completionHandler(.failure(ApiRequestError.invalidUrl)) }
         let task = URLSession.shared.dataTask(with: url) { data, _, error in
             guard let data = data else { return completionHandler(.failure(ApiRequestError.responseError)) }
             do {
-                let response = try JSONDecoder().decode(CurrentQuotes.self, from: data)
+                let response = try JSONDecoder().decode(LiveQuotes.self, from: data)
                 completionHandler(.success(response))
             } catch {
                 completionHandler(.failure(ApiRequestError.decodingError))
