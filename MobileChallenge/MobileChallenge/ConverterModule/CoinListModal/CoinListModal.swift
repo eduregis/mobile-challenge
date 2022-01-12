@@ -11,10 +11,8 @@ import UIKit
 class CoinListModal: UIViewController {
     
     var tableView = UITableView()
-    let searchController = UISearchController()
     
     var fromOrTo: String!
-    var actualSearchText: String = ""
     
     var viewModel: ConverterViewModelType!
 
@@ -40,15 +38,11 @@ class CoinListModal: UIViewController {
         tableView.dataSource = self
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         
-        navigationItem.searchController = searchController
-        navigationItem.hidesSearchBarWhenScrolling = false
-        searchController.searchResultsUpdater = self
-        
         self.view.addSubview(tableView)
         self.tableView.tableFooterView = UIView()
         self.title = "Choose a coin..."
         
-        self.hideKeyboardWhenTappedAround() 
+//        self.hideKeyboardWhenTappedAround()
 
         configureConstraints()
     }
@@ -74,7 +68,7 @@ extension CoinListModal: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath as IndexPath)
         cell.textLabel?.text = self.viewModel.cellText(index: indexPath.row)
-        if ((fromOrTo == "from") && (indexPath.row == viewModel.fromQuoteIndex)) || ((fromOrTo == "to") && (indexPath.row == viewModel.toQuoteIndex)) {
+        if ((fromOrTo == "from") && (viewModel.fromQuote?.code == cell.textLabel?.text)) || ((fromOrTo == "from") && (viewModel.fromQuote?.code == cell.textLabel?.text)) {
             cell.accessoryType = .checkmark
         } else {
             cell.accessoryType = .none
@@ -83,26 +77,8 @@ extension CoinListModal: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        dismiss(animated: true, completion: { [self] in
-            self.viewModel.selectedRow(index: indexPath.row, fromOrTo: fromOrTo) { () -> () in
-                dismiss(animated: true, completion: nil)
-            }
-        })
-    }
-}
-
-extension CoinListModal: UISearchResultsUpdating {
-    func updateSearchResults(for searchController: UISearchController) {
-        guard let searchText = searchController.searchBar.text else { return }
-        self.actualSearchText = searchText
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
-            if self.actualSearchText == searchText {
-                self.viewModel.fetchQuotes(searchText: searchText) { () -> () in
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        self.tableView.reloadData()
-                    }
-                }
-            }
+        viewModel.selectedRow(quote: viewModel.liveQuotes![indexPath.row], fromOrTo: fromOrTo) { () -> () in
+            dismiss(animated: true, completion: nil)
         }
     }
 }

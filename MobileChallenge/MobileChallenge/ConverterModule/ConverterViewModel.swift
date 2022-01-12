@@ -12,14 +12,14 @@ protocol ConverterViewModelType {
     var output: ConverterViewModelOutput? { get set }
     var liveQuotes: [(code: String, rate: CGFloat)]? { get set }
     
-    var fromQuoteIndex: Int? { get set }
-    var toQuoteIndex: Int? { get set }
+    var fromQuote: (code: String, rate: CGFloat)? { get set }
+    var toQuote: (code: String, rate: CGFloat)? { get set }
     
     func fetchQuotes(searchText: String, completion: () -> ())
     func convert(amount: CGFloat, from: (code: String, rate: CGFloat), to: (code: String, rate: CGFloat)) -> CGFloat
     func numberOfRows() -> Int
     func cellText(index: Int) -> String
-    func selectedRow(index: Int, fromOrTo: String, completion: () -> ())
+    func selectedRow(quote: (code: String, rate: CGFloat), fromOrTo: String, completion: () -> ())
 }
 
 protocol ConverterViewModelOutput: AnyObject {
@@ -32,8 +32,8 @@ final class ConverterViewModel {
     public weak var output: ConverterViewModelOutput?
     var liveQuotes: [(code: String, rate: CGFloat)]? = []
     
-    var fromQuoteIndex: Int? = -1
-    var toQuoteIndex: Int? = -1
+    var fromQuote: (code: String, rate: CGFloat)? = (code: "000", rate: 0)
+    var toQuote: (code: String, rate: CGFloat)? = (code: "000", rate: 0)
 }
 
 extension ConverterViewModel: ConverterViewModelType {
@@ -45,7 +45,8 @@ extension ConverterViewModel: ConverterViewModelType {
                 self.liveQuotes = liveQuotes.sorted(by: { $0.code < $1.code })
                 if searchText != "" {
                     self.liveQuotes = self.liveQuotes?.filter { quote in
-                        return quote.code.contains(searchText.uppercased())
+                        let subquote = "\(quote.code.suffix(3))"
+                        return subquote.contains(searchText.uppercased())
                     }
                 }
             case .failure: break
@@ -67,11 +68,11 @@ extension ConverterViewModel: ConverterViewModelType {
         return "\(code.suffix(3))"
     }
     
-    func selectedRow(index: Int, fromOrTo: String, completion: () -> ()) {
+    func selectedRow(quote: (code: String, rate: CGFloat), fromOrTo: String, completion: () -> ()) {
         if fromOrTo == "from" {
-            fromQuoteIndex = index
+            fromQuote = quote
         } else if fromOrTo == "to" {
-            toQuoteIndex = index
+            toQuote = quote
         }
         completion()
         self.output?.reloadDisplayData()
@@ -93,6 +94,4 @@ extension ConverterViewModel: ConverterViewModelType {
             }
         }
     }
-    
-    
 }

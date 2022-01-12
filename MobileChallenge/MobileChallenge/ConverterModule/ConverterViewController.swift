@@ -12,20 +12,6 @@ class ConverterViewController: UIViewController {
     
     var viewModel: ConverterViewModelType!
     
-    var fromQuote: (code: String, rate: CGFloat)? {
-        didSet {
-            fromButton.setTitle("\(fromQuote?.code.suffix(3) ?? "")", for: .normal)
-            enableConvert()
-        }
-    }
-    
-    var toQuote: (code: String, rate: CGFloat)? {
-        didSet {
-            toButton.setTitle("\(toQuote?.code.suffix(3) ?? "")", for: .normal)
-            enableConvert()
-        }
-    }
-    
     lazy var arrowImage: UIImageView = {
         let imageView = UIImageView(image: UIImage(systemName: "arrow.right"))
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -163,8 +149,8 @@ class ConverterViewController: UIViewController {
     @objc func triggerConvert() {
         if amountTextField.hasText {
             guard let amountText = amountTextField.text else { return }
-            guard let fromQuote = fromQuote else { return }
-            guard let toQuote = toQuote else { return }
+            guard let fromQuote = viewModel.fromQuote else { return }
+            guard let toQuote = viewModel.toQuote else { return }
             
             if let number = NumberFormatter().number(from: amountText) {
                 let amount = CGFloat(truncating: number)
@@ -176,7 +162,7 @@ class ConverterViewController: UIViewController {
     }
     
     func enableConvert() {
-        if fromQuote != nil && toQuote != nil {
+        if viewModel.fromQuote != nil && viewModel.toQuote != nil {
             convertButton.isEnabled = true
             convertButton.backgroundColor = .systemBlue
         }
@@ -230,15 +216,13 @@ class ConverterViewController: UIViewController {
 extension ConverterViewController: ConverterViewModelOutput {
     func reloadDisplayData() {
         self.viewModel.fetchQuotes(searchText: "") {
-            guard let fromQuoteIndex = self.viewModel.fromQuoteIndex else { return }
-            guard let toQuoteIndex = self.viewModel.toQuoteIndex else { return }
-            guard let liveQuotes = self.viewModel.liveQuotes else { return }
-            if fromQuoteIndex >= 0 {
-                fromQuote = liveQuotes[fromQuoteIndex]
+            if viewModel.fromQuote?.code != "000" {
+                fromButton.setTitle("\(viewModel.fromQuote?.code.suffix(3) ?? "")", for: .normal)
             }
-            if toQuoteIndex >= 0 {
-                toQuote = liveQuotes[toQuoteIndex]
+            if viewModel.toQuote?.code != "000" {
+                toButton.setTitle("\(viewModel.toQuote?.code.suffix(3) ?? "")", for: .normal)
             }
+            enableConvert()
         }
     }
 }
